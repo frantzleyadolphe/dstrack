@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Field,
@@ -16,12 +16,20 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { z } from "zod";
 import { useState } from "react";
-import { useRouter } from "next/router";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
 import { authClient } from "@/lib/auth-client";
 import { signIn } from "../server/users";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-
+import { useRouter } from "next/navigation";
 export const loginFormSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
@@ -72,12 +80,22 @@ export function LoginForm({
                   </p>
                 </div>
                 <Field>
-                  <FieldLabel htmlFor="email">Email</FieldLabel>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="example@dentsplysirona.com"
-                    required
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="example@dentsplysirona.com"
+                            {...field}
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </Field>
                 <Field>
