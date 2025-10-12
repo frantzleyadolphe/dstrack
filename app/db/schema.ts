@@ -10,11 +10,44 @@ import {
   boolean,
 } from "drizzle-orm/pg-core";
 
+export const shift = pgTable("shift", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 50 }).notNull(), // Shift 1, Shift 2, Shift 3
+});
+
+export const admin = pgTable("admin", {
+  id: text("id").primaryKey(),
+  name: varchar("name", { length: 50 }).notNull(),
+  email: varchar("email", { length: 100 }).notNull().unique(),
+  password: text("password").notNull(),
+  shiftId: integer("shift_id")
+    .references(() => shift.id)
+    .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const machine = pgTable("machine", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 50 }).notNull(), // Machine 1, Machine 2, ...
+  shiftId: integer("shift_id")
+    .references(() => shift.id)
+    .notNull(),
+});
+
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
+
+  password: text("password").notNull(),
+
+  machineId: integer("machine_id")
+    .references(() => machine.id)
+    .notNull(),
+  adminId: text("admin_id")
+    .references(() => admin.id)
+    .notNull(), // Ki admin ki kreye user la
   image: text("image"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
@@ -74,9 +107,12 @@ export const enhance_production_report = pgTable("enhance_production_report", {
   id: serial("id").primaryKey(),
   report_date: date("report_date").notNull(),
   operator_initials: varchar("operator_initials", { length: 10 }),
+  operatorId: text("operator_id").references(() => user.id), // user who submit the report
   item_number: varchar("item_number", { length: 10 }),
   lot_number: varchar("lot_number", { length: 50 }),
-  table_name: varchar("table_name", { length: 10 }),
+  machineId: integer("machine_id")
+    .references(() => machine.id)
+    .notNull(),
   associate_hour3: integer("associate_hour"),
   associate_hour4: integer("associate_hour3"),
   shift: varchar("shift", { length: 10 }),
@@ -108,6 +144,17 @@ export const enhance_production_entries = pgTable(
     timer: integer("timer"),
     issue_reported: text("issue_reported"),
     downtime_minute: integer("downtime_minute"),
+    is_shift_ended: boolean("is_shift_ended").default(false),
     created_at: timestamp("created_at").defaultNow(),
   }
 );
+
+export const export_log = pgTable("export_log", {
+  id: serial("id").primaryKey(),
+  report_id: integer("report_id")
+    .references(() => enhance_production_report.id, { onDelete: "cascade" })
+    .notNull(),
+  file_url: text("file_url"),
+  sent_to: text("sent_to"),
+  sent_at: timestamp("sent_at").defaultNow(),
+});
