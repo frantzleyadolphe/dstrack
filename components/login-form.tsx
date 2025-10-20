@@ -26,10 +26,11 @@ import {
 } from "@/components/ui/form";
 
 import { authClient } from "@/lib/auth-client";
-import { signIn } from "../server/users";
+import { signIn, signUp } from "../server/users";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+
 export const loginFormSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
@@ -41,7 +42,7 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const session = authClient.useSession().data?.session;
+  //const session = authClient.useSession().data?.session;
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -53,22 +54,13 @@ export function LoginForm({
 
   async function onSubmit(data: z.infer<typeof loginFormSchema>) {
     setLoading(true);
-    const { success, message } = await signIn(data.email, data.password);
-    if (success) {
-      toast.success(message as string);
-      setLoading(false);
-      router.push("/dashboard");
-    } else {
-      setLoading(false);
-      toast.error(message as string);
-    }
   }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
           <Form {...form}>
-            <form className="p-6 md:p-8" onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 md:p-8">
               <FieldGroup>
                 <div className="flex flex-col items-center gap-2 text-center">
                   <h1 className="text-2xl font-bold">

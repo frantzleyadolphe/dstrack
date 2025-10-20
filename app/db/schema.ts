@@ -39,9 +39,7 @@ export const user = pgTable("user", {
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
-
   password: text("password").notNull(),
-
   machineId: integer("machine_id")
     .references(() => machine.id)
     .notNull(),
@@ -158,3 +156,16 @@ export const export_log = pgTable("export_log", {
   sent_to: text("sent_to"),
   sent_at: timestamp("sent_at").defaultNow(),
 });
+
+export const schema = {
+  user,
+  account,
+  session,
+  verification,
+  admin,
+  shift,
+  machine,
+  enhance_production_report,
+  enhance_production_entries,
+  export_log,
+};

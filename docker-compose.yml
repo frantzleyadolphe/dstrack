@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        BETTER_AUTH_SECRET: ${NEXTAUTH_SECRET}
+        DATABASE_URL: ${DATABASE_URL}
+        # GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        # GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+        # FACEBOOK_CLIENT_ID: ${FACEBOOK_CLIENT_ID}
+        # FACEBOOK_CLIENT_SECRET: ${FACEBOOK_CLIENT_SECRET}
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
+      # - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      # - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      # - FACEBOOK_CLIENT_ID=${FACEBOOK_CLIENT_ID}
+      # - FACEBOOK_CLIENT_SECRET=${FACEBOOK_CLIENT_SECRET}
+    env_file:
+      - .env
+    command: ["npm", "start"]
